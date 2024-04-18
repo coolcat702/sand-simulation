@@ -47,8 +47,8 @@
         grid.push(new Array(gridWidth).fill(''));
       }
     }
-    const colors = ['red', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'black', 'white', 'tan'];
-    let currentColor = 'tan';
+    const colors = ['tan', 'red', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'black', 'white'];
+    let currentColor = colors[0];
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -138,10 +138,8 @@
 
     function handleKeyPress(event) {
       const key = event.key;
-      if(key >= '1' && key <= '9') {
-        currentColor = colors[key - 1];
-      } else if(key === '0') {
-        currentColor = 'tan';
+      if(key >= '0' && key <= '9') {
+        currentColor = colors[key];
       } else if(key === ' ') {
         grid = grid.map(row => row.map(() => ''));
         draw();
