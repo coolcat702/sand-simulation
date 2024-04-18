@@ -21,93 +21,76 @@
 <body>
   <canvas id="sandbox"></canvas>
   <script>
-    const canvas = document.getElementById('sandbox');
-    const ctx = canvas.getContext('2d');
-    let cellSize = 10;
-    let grid, gridWidth, gridHeight;
-    let radius = 5;
-    let paused = false;
-    let updateInterval = 100; // Initial interval set to 100 ms
-    let updateTimeout;
+  const canvas = document.getElementById('sandbox');
+  const ctx = canvas.getContext('2d');
+  let cellSize = 10;
+  let grid, gridWidth, gridHeight;
+  let radius = 5;
+  let paused = false;
+  let updateInterval = 100; // initial interval for updates
+  let intervalId = null; // to store the ID of the interval
 
-    function setupCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      gridWidth = Math.floor(canvas.width / cellSize);
-      gridHeight = Math.floor(canvas.height / cellSize);
-      initializeGrid();
+  function setupCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gridWidth = Math.floor(canvas.width / cellSize);
+    gridHeight = Math.floor(canvas.height / cellSize);
+    initializeGrid();
+    draw();
+    startUpdateInterval();
+  }
+
+  function startUpdateInterval() {
+    if (intervalId !== null) {
+      clearInterval(intervalId);
+    }
+    intervalId = setInterval(update, updateInterval);
+  }
+
+  function initializeGrid() {
+    grid = [];
+    for(let i = 0; i < gridHeight; i++) {
+      grid.push(new Array(gridWidth).fill(''));
+    }
+  }
+
+  // The rest of your existing draw, moveCell, spawnSand, update, and handleMouseClick functions would go here.
+
+  function handleKeyPress(event) {
+    const key = event.key;
+    if (key >= '1' && key <= '9') {
+      currentColor = colors[key - 1];
+    } else if (key === '0') {
+      currentColor = 'tan';
+    } else if (key === ' ') {
+      grid = grid.map(row => row.map(() => ''));
       draw();
-    }
-
-    function initializeGrid() {
-      grid = [];
-      for(let i = 0; i < gridHeight; i++) {
-        grid.push(new Array(gridWidth).fill(''));
+    } else if (key === 'p') {
+      radius++;
+      if (radius > 15) {
+        radius = 15;
       }
-    }
-
-    const colors = ['red', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'black', 'white', 'tan'];
-    let currentColor = 'tan';
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for(let y = 0; y < gridHeight; y++) {
-        for(let x = 0; x < gridWidth; x++) {
-          if(grid[y][x] !== '') {
-            ctx.fillStyle = grid[y][x];
-            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-          }
-        }
+    } else if (key === 'o') {
+      radius--;
+      if (radius < 1) {
+        radius = 1;
       }
+    } else if (key === 'e') {
+      currentColor = 'erase';
+    } else if (key === 'c') {
+      paused = !paused;
+    } else if (key === 'f') {
+      if (updateInterval > 10) updateInterval -= 10; // decrease interval by 10ms
+      startUpdateInterval();
+    } else if (key === 's') {
+      updateInterval += 10; // increase interval by 10ms
+      startUpdateInterval();
     }
-
-    function update() {
-      if(!paused) {
-        let hasFallingSand = false;
-        for(let y = gridHeight - 1; y >= 0; y--) {
-          for(let x = 0; x < gridWidth; x++) {
-            // Update logic...
-          }
-        }
-        if(hasFallingSand) {
-          draw();
-        }
-      }
-      updateTimeout = setTimeout(update, updateInterval); // Reschedule the update
-    }
-
-    function handleMouseClick(event) {
-      // Mouse click logic...
-    }
-
-    function handleKeyPress(event) {
-      const key = event.key;
-      switch(key) {
-        case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
-          currentColor = colors[key - 1];
-          break;
-        case '0':
-          currentColor = 'tan';
-          break;
-        case ' ':
-          // Clear grid logic...
-          break;
-        case 'p': case 'o': case 'e': case 'c':
-          // Other key functionalities...
-          break;
-        case 'f':
-          updateInterval = Math.max(10, updateInterval - 10); // Decrease interval, increase speed
-          break;
-        case 's':
-          updateInterval = Math.min(1000, updateInterval + 10); // Increase interval, decrease speed
-          break;
-      }
-    }
-    window.addEventListener('resize', setupCanvas);
-    setupCanvas();
-    canvas.addEventListener('click', handleMouseClick);
-    document.addEventListener('keypress', handleKeyPress);
-    update(); // Start the update loop using setTimeout
-  </script>
+  }
+  window.addEventListener('resize', setupCanvas);
+  setupCanvas();
+  canvas.addEventListener('click', handleMouseClick);
+  document.addEventListener('keypress', handleKeyPress);
+</script>
 </body>
 </html>
