@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sand Simulation</title>
   <style>
-  body, html {
-    margin: 0;
-    padding: 0;
-    background-color: #222;
-    height: 100%;
-    overflow: hidden;
-  }
-  canvas {
-    display: block;
-    border: 1px solid black;
-  }
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      border: 1px solid black;
+    }
   </style>
 </head>
+
 <body>
   <canvas id="sandbox"></canvas>
   <script>
@@ -39,19 +43,18 @@
 
     function initializeGrid() {
       grid = [];
-      for (let i = 0; i < gridHeight; i++) {
+      for(let i = 0; i < gridHeight; i++) {
         grid.push(new Array(gridWidth).fill(''));
       }
     }
-
     const colors = ['red', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'black', 'white', 'tan'];
     let currentColor = 'tan';
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let y = 0; y < gridHeight; y++) {
-        for (let x = 0; x < gridWidth; x++) {
-          if (grid[y][x] !== '') {
+      for(let y = 0; y < gridHeight; y++) {
+        for(let x = 0; x < gridWidth; x++) {
+          if(grid[y][x] !== '') {
             ctx.fillStyle = grid[y][x];
             ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
           }
@@ -60,7 +63,7 @@
     }
 
     function moveCell(x, y, dx, dy) {
-      if (x + dx >= 0 && x + dx < gridWidth && y + dy >= 0 && y + dy < gridHeight && grid[y + dy][x + dx] === '') {
+      if(x + dx >= 0 && x + dx < gridWidth && y + dy >= 0 && y + dy < gridHeight && grid[y + dy][x + dx] === '') {
         grid[y + dy][x + dx] = grid[y][x];
         grid[y][x] = '';
         return true;
@@ -69,14 +72,14 @@
     }
 
     function spawnSand(x, y) {
-      for (let dx = -radius; dx <= radius; dx++) {
-        for (let dy = -radius; dy <= radius; dy++) {
-          if (Math.sqrt(dx * dx + dy * dy) <= radius) {
+      for(let dx = -radius; dx <= radius; dx++) {
+        for(let dy = -radius; dy <= radius; dy++) {
+          if(Math.sqrt(dx * dx + dy * dy) <= radius) {
             const nx = x + dx;
             const ny = y + dy;
-            if (nx >= 0 && nx < gridWidth && ny >= 0 && ny < gridHeight) {
-              if (currentColor != 'erase') {
-              	grid[ny][nx] = currentColor;
+            if(nx >= 0 && nx < gridWidth && ny >= 0 && ny < gridHeight) {
+              if(currentColor != 'erase') {
+                grid[ny][nx] = currentColor;
               } else {
                 grid[ny][nx] = '';
               }
@@ -88,31 +91,31 @@
     }
 
     function update() {
-      if (!paused) {
+      if(!paused) {
         let hasFallingSand = false;
-        for (let y = gridHeight - 1; y >= 0; y--) {
-          for (let x = 0; x < gridWidth; x++) {
-            if (grid[y][x] !== '') {
-              if (y < gridHeight - 1 && grid[y + 1][x] === '') {
+        for(let y = gridHeight - 1; y >= 0; y--) {
+          for(let x = 0; x < gridWidth; x++) {
+            if(grid[y][x] !== '') {
+              if(y < gridHeight - 1 && grid[y + 1][x] === '') {
                 grid[y + 1][x] = grid[y][x];
                 grid[y][x] = '';
                 hasFallingSand = true;
-              } else if (y > 1 && grid[y - 1][x] !== '' && grid[y - 2][x] === '') {
-                if (!moveCell(x, y, 0, -1)) {
+              } else if(y > 1 && grid[y - 1][x] !== '' && grid[y - 2][x] === '') {
+                if(!moveCell(x, y, 0, -1)) {
                   const leftNeighborHeight = x > 0 ? grid[y - 1][x - 1] !== '' ? grid[y - 1][x - 1] : grid[y][x - 1] !== '' ? grid[y][x - 1] : -Infinity : -Infinity;
                   const rightNeighborHeight = x < gridWidth - 1 ? grid[y - 1][x + 1] !== '' ? grid[y - 1][x + 1] : grid[y][x + 1] !== '' ? grid[y][x + 1] : -Infinity : -Infinity;
                   const currentHeight = y;
-                  if (leftNeighborHeight < currentHeight - 1 && rightNeighborHeight < currentHeight - 1) {
+                  if(leftNeighborHeight < currentHeight - 1 && rightNeighborHeight < currentHeight - 1) {
                     const direction = Math.random() < 0.5 ? -1 : 1;
                     moveCell(x, y, direction, -1);
-                  } else if (leftNeighborHeight < currentHeight - 1 || rightNeighborHeight < currentHeight - 1) {
+                  } else if(leftNeighborHeight < currentHeight - 1 || rightNeighborHeight < currentHeight - 1) {
                     const direction = leftNeighborHeight < rightNeighborHeight ? -1 : 1;
                     moveCell(x, y, direction, -1);
                   }
                 }
-              } else if (y < gridHeight - 1 && (grid[y + 1][x - 1] === '' || grid[y + 1][x + 1] === '') && (grid[y][x - 1] === '' || grid[y][x + 1] === '')) {
+              } else if(y < gridHeight - 1 && (grid[y + 1][x - 1] === '' || grid[y + 1][x + 1] === '') && (grid[y][x - 1] === '' || grid[y][x + 1] === '')) {
                 const direction = Math.random() < 0.5 ? -1 : 1;
-                if (x + direction >= 0 && x + direction < gridWidth && grid[y + 1][x + direction] === '') {
+                if(x + direction >= 0 && x + direction < gridWidth && grid[y + 1][x + direction] === '') {
                   moveCell(x, y, direction, 1);
                   hasFallingSand = true;
                 }
@@ -120,7 +123,7 @@
             }
           }
         }
-        if (hasFallingSand) {
+        if(hasFallingSand) {
           draw();
         }
       }
@@ -135,37 +138,35 @@
 
     function handleKeyPress(event) {
       const key = event.key;
-      if (key >= '1' && key <= '9') {
+      if(key >= '1' && key <= '9') {
         currentColor = colors[key - 1];
-      } else if (key === '0') {
+      } else if(key === '0') {
         currentColor = 'tan';
-      } else if (key === ' ') {
+      } else if(key === ' ') {
         grid = grid.map(row => row.map(() => ''));
         draw();
-      } else if (key === 'p') {
-		radius++;
-        if (radius > 15) {
-			radius = 15;
+      } else if(key === 'p') {
+        radius++;
+        if(radius > 15) {
+          radius = 15;
         }
-      } else if (key === 'o') {
+      } else if(key === 'o') {
         radius--;
-      	if (radius < 1) {
+        if(radius < 1) {
           radius = 1;
         }
-      } else if (key == 'e') {
-      	currentColor = 'erase';
-      } else if (key == 'c') {
-      	paused = !paused;
+      } else if(key == 'e') {
+        currentColor = 'erase';
+      } else if(key == 'c') {
+        paused = !paused;
       }
     }
-
     window.addEventListener('resize', setupCanvas);
     setupCanvas();
-
     canvas.addEventListener('click', handleMouseClick);
     document.addEventListener('keypress', handleKeyPress);
-
     setInterval(update, 100);
   </script>
 </body>
+
 </html>
