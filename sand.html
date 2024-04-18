@@ -150,8 +150,8 @@
         }
       } else if(key === 'o') {
         radius--;
-        if(radius < 1) {
-          radius = 1;
+        if(radius < 0) {
+          radius = 0;
         }
       } else if(key == 'e') {
         currentColor = 'erase';
